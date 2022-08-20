@@ -1,4 +1,4 @@
-- hosts: "{{var_ip}}"
+- hosts: [Invertori.hosts]
   tasks:
   
     - name: Create DockerFile
