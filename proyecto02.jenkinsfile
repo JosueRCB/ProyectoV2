@@ -1,0 +1,80 @@
+def genaralvars () {
+
+    env.GIT_REPO = 'https://github.com/JosueRCB/Proyecto.git'
+    env.GIT_BRANCH = 'main'
+    env.DOCKER_REPO = 'josuercb'
+    CONTAINER_PORT= '84'
+
+}
+
+
+pipeline {
+    agent any
+    tools {
+       terraform 'terraform-2'
+    }
+    stages {
+        stage ("Set Variables") {
+            steps {
+                genaralvars()
+            }
+        }      
+        stage('terraform format check') {
+            steps{
+                sh 'terraform fmt'
+            }
+        }
+        stage('terraform Init') {
+            steps{
+                sh 'terraform init -upgrade'
+            }
+        }
+        stage('terraform apply') {
+            steps{
+                  {
+                withCredentials([aws(accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'josue-aws-proyecto', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]){
+                    sh "terraform apply --auto-approve"
+                }
+                script {
+                    PUBLIC_IP_EC2 = sh (script: "terraform output instance_public_ip", returnStdout:true).trim()
+                }
+                echo "${PUBLIC_IP_EC2}"
+            }
+        }
+
+        stage('Change inventory content') {
+            steps{
+                sh "echo $PUBLIC_IP_EC2 > josue-inventory.hosts"
+            }
+        }     
+        stage('Wait 30 seconds') {
+            steps {
+                sleep time:30, unit: 'SECONDS'
+            }
+        }
+       stage('Docker download, installation and configuration') {
+            steps {
+                ansiblePlaybook become: true, colorized: true, extras: '-v', disableHostKeyChecking: true, credentialsId: 'josue-ssh-proyecto', installation: 'ansible210', inventory: 'josue-inventory.hosts', playbook: 'playbook-install-docker.yml'
+            }
+        }
+       
+        stage('Docker file creation.') {
+            steps {
+                
+                ansiblePlaybook become: true, colorized: true, extras: '-v', disableHostKeyChecking: true, credentialsId: 'josue-ssh-proyecto', installation: 'ansible210', inventory: 'josue-inventory.hosts', playbook: 'playbook-create-docker.yml', extraVars: [ var_job_name: "${JOB_BASE_NAME}", var_build_number: "${BUILD_NUMBER}", var_docker_repo: "${env.DOCKER_REPO}",  var_container_port: "${CONTAINER_PORT}",var_ip: "${PUBLIC_IP_EC2}" ]
+            }
+        }
+       stage('Manual Approval to Destroy the Infra') {
+            steps{
+                input "Proceed with destroy the Infra?"
+            }
+        }
+        stage('Executing Terraform Destroy') {
+            steps{
+                withCredentials([aws(accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'josue-aws-proyecto', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]){
+                sh "terraform destroy --auto-approve"
+            }
+            }
+        }
+    }
+}
