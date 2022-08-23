@@ -52,9 +52,14 @@ pipeline {
                 sleep time:30, unit: 'SECONDS'
             }
         }
-       stage('Docker download, installation and configuration') {
+       stage('package') {
             steps {
-                ansiblePlaybook become: true, colorized: true, extras: '-v', disableHostKeyChecking: true, credentialsId: 'josue-ssh-proyectoV2', installation: 'ansible210', inventory: 'Invertori.hosts', playbook: 'playbook-install-docker.yml'
+                ansiblePlaybook become: true, colorized: true, extras: '-v', disableHostKeyChecking: true, credentialsId: 'josue-ssh-proyectoV2', installation: 'ansible210', inventory: 'Invertori.hosts', playbook: 'playbook-install-package.yml'
+            }
+        }
+         stage('Docker download') {
+            steps {
+                ansiblePlaybook become: true, colorized: true, extras: '-v', disableHostKeyChecking: true, credentialsId: 'josue-ssh-proyectoV2', installation: 'ansible210', inventory: 'Invertori.hosts', playbook: 'playbook-install-dockerr.yml'
             }
         }
        
