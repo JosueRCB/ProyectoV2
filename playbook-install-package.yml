@@ -22,3 +22,15 @@
         state: latest
     - name: Execute a command
       shell: curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+    - name: Add Docker Repository
+      apt_repository:
+        repo: deb https://download.docker.com/linux/ubuntu focal stable
+        state: present
+    - name: "Update packages"
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+    - name: "Install Docker"
+      apt:
+          name: ['docker-ce']
+          state: latest    
