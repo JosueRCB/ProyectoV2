@@ -1,15 +1,15 @@
 - hosts: all
   tasks:
     - name: DockerFile
-      shell: '''
-              cat <<EOT > Dockerfile
+      shell: 
+         cmd |
+               cat <<EOT > Dockerfile
                FROM nginx:latest
-               COPY indexV2.html /usr/share/nginx/html/
-               ''' 
+               COPY indexV2.html /usr/share/nginx/html/ 
     - name: Build Image
       shell: docker build -t "{{ var_docker_repo }}"/"{{ var_job_name }}":"{{ var_build_number }}" .
     - name: Publish Image
-      shell: '''
+      shell: 
+         cmd |
               docker login -u "{{var_docker_user}}" -p $"{{var_docker_user}}"
               docker push "{{ var_docker_repo }}"/"{{ var_job_name }}":"{{ var_build_number }}"
-             '''
