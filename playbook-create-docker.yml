@@ -1,12 +1,5 @@
 - hosts: "{{var_ip}}"
   tasks:
-    - name: Build Image
-      shell:  docker build -t "{{ var_docker_repo }}"/"{{ var_job_name }}":"{{ var_build_number }}" .
-    - name: Publish Image
-      shell:  '''
-                 docker login -u $docker_user -p $docker_pass
-                 docker push ${env.DOCKER_REPO}/${JOB_BASE_NAME}:${BUILD_NUMBER}
-                 '''
     - name: pullimage
       shell:  docker pull "{{ var_docker_repo }}"/"{{ var_job_name }}":"{{ var_build_number }}"
     - name: run images
