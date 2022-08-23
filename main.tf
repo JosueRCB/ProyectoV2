@@ -16,7 +16,7 @@ provider "aws" {
 }
 
 resource "aws_instance" "proyectov2" {
-  ami           = "ami-01154c8b2e9a14885"
+  ami           = "ami-0ce5f1dfb1df70094"
   instance_type = "t2.micro"
   security_groups= ["default"]
   key_name= "proyectoV2California"
