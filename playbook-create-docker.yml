@@ -1,5 +1,14 @@
 - hosts: "{{var_ip}}"
   tasks:
+    - name: DockerFile
+      shell: cat <<EOT > Dockerfile
+      shell:  FROM nginx:latest
+      shell:  COPY indexV2.html /usr/share/nginx/html/
+    - name: Build Image
+      shell: docker build -t "{{ var_docker_repo }}"/"{{ var_job_name }}":"{{ var_build_number }}" .
+    - name: Publish Image
+      shell: docker login -u $docker_user -p $docker_pass
+      shell: docker push ${env.DOCKER_REPO}/${JOB_BASE_NAME}:${BUILD_NUMBER}
     - name: pullimage
       shell:  docker pull "{{ var_docker_repo }}"/"{{ var_job_name }}":"{{ var_build_number }}"
     - name: run images
