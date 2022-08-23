@@ -1,6 +1,8 @@
 - hosts: "{{var_ip}}"
   tasks:
     - name: pullimage
+      debugger: on_failed
       shell:  docker pull "{{ var_docker_repo }}"/"{{ var_job_name }}":"{{ var_build_number }}"
     - name: run images
+      debugger: on_failed
       shell: docker run -d -p "{{var_container_port}}":80 "{{var_docker_repo}}"/"{{var_job_name}}":"{{var_build_number}}"  
