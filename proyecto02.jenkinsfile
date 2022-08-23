@@ -53,12 +53,12 @@ pipeline {
                 ansiblePlaybook become: true, colorized: true, extras: '-v', disableHostKeyChecking: true, credentialsId: 'josue-ssh-proyectoV2', installation: 'ansible210', inventory: 'Invertori.hosts', playbook: 'playbook-install-package.yml'
             }
         }
-         /*stage('Docker file creation.') {
+         stage('Docker file creation.') {
             steps {
                 ansiblePlaybook become: true, colorized: true, extras: '-v', disableHostKeyChecking: true, credentialsId: 'josue-ssh-proyectoV2', installation: 'ansible210', inventory: 'Invertori.hosts', playbook: 'playbook-DockerFile.yml', extraVars: [ var_job_name: "${JOB_BASE_NAME}", var_build_number: "${BUILD_NUMBER}", var_docker_repo: "${env.DOCKER_REPO}",  var_container_port: "${CONTAINER_PORT}",var_ip: "${PUBLIC_IP_EC2}" ]
             
            }
-        }*/
+        }
         stage('pull and run') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhubjosue', passwordVariable: 'docker_pass', usernameVariable: 'docker_user')]) {
