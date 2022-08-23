@@ -57,12 +57,15 @@ pipeline {
                 ansiblePlaybook become: true, colorized: true, extras: '-v', disableHostKeyChecking: true, credentialsId: 'josue-ssh-proyectoV2', installation: 'ansible210', inventory: 'Invertori.hosts', playbook: 'playbook-install-package.yml'
             }
         }
-         /*stage('Docker download') {
+         stage ("Create Dockerfile") {
             steps {
-                ansiblePlaybook become: true, colorized: true, extras: '-v', disableHostKeyChecking: true, credentialsId: 'josue-ssh-proyectoV2', installation: 'ansible210', inventory: 'Invertori.hosts', playbook: 'playbook-install-dockerr.yml'
+                sh '''
+                    cat <<EOT > Dockerfile
+                    FROM nginx:latest
+                    COPY index.html /usr/share/nginx/html/
+                '''
             }
-        }*/
-       
+        }
         stage('Docker file creation.') {
             steps {
                 
