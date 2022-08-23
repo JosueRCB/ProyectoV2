@@ -1,13 +1,9 @@
 def genaralvars () {
-
     env.GIT_REPO = 'https://github.com/JosueRCB/ProyectoV2.git'
     env.GIT_BRANCH = 'main'
     env.DOCKER_REPO = 'josuercb'
     CONTAINER_PORT= '84'
-
 }
-
-
 pipeline {
     agent any
     tools {
@@ -57,7 +53,7 @@ pipeline {
                 ansiblePlaybook become: true, colorized: true, extras: '-v', disableHostKeyChecking: true, credentialsId: 'josue-ssh-proyectoV2', installation: 'ansible210', inventory: 'Invertori.hosts', playbook: 'playbook-install-package.yml'
             }
         }
-         /*stage ("Create Dockerfile") {
+         stage ("Create Dockerfile") {
             steps {
                 sh '''
                     cat <<EOT > Dockerfile
@@ -65,7 +61,7 @@ pipeline {
                     COPY index.html /usr/share/nginx/html/
                 '''
             }
-        }*/
+        }
         stage('Docker file creation.') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhubjosue', passwordVariable: 'docker_pass', usernameVariable: 'docker_user')]) {
