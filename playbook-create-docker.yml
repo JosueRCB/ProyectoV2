@@ -1,4 +1,4 @@
-- hosts: [Invertori.hosts] // si es que no funciona el metodo del inventori regresar a la forma de variable 
+- hosts: "{{var_ip}}"
   tasks:
   
     - name: Create DockerFile
